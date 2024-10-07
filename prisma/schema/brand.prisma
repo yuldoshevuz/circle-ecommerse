@@ -1,0 +1,10 @@
+model Brand {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  slug        String    @unique
+  products    Product[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

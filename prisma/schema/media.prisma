@@ -1,0 +1,12 @@
+model Media {
+  id          String          @id @default(uuid())
+  product     Product?        @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id  String?
+  category    Category?       @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  category_id String?
+  model_type  NavbarModelType
+  path        String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

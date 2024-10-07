@@ -1,0 +1,11 @@
+model Promo {
+  id         String   @id @default(uuid())
+  title      String
+  type       String
+  body       String
+  image      String
+  product    Product? @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id String?  @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

@@ -1,0 +1,11 @@
+model StockConfiguration {
+  id           String           @id @default(uuid())
+  attribute    Attribute        @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
+  attribute_id String
+  values       AttributeValue[] @relation("StockConfigurationAttributeValue")
+  stock        Stock            @relation(fields: [stock_id], references: [id], onDelete: Cascade)
+  stock_id     String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

@@ -1,0 +1,22 @@
+model Navbar {
+  id         String          @id @default(uuid())
+  text       String
+  slug       String
+  image      String?
+  model_type NavbarModelType
+  type       NavbarType
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+enum NavbarModelType {
+  products
+  categories
+  tags
+}
+
+enum NavbarType {
+  header
+  footer
+}

@@ -1,0 +1,10 @@
+model Tag {
+  id          String    @id @default(uuid())
+  title       String
+  slug        String    @unique
+  description String
+  products    Product[] @relation("ProductTag")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

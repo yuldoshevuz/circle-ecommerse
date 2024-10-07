@@ -1,0 +1,13 @@
+model Stock {
+  id             String           @id @default(uuid())
+  quantity       Int
+  price          String
+  configurations StockConfiguration[]
+  product        Product          @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id     String
+  cart_items     CartItem[]
+  order_items    OrderItem[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

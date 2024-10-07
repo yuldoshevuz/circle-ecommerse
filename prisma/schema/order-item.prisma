@@ -1,0 +1,11 @@
+model OrderItem {
+  id       String @id @default(uuid())
+  order    Order  @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  order_id String
+  stock    Stock  @relation(fields: [stock_id], references: [id], onDelete: Cascade)
+  stock_id String
+  quantity Int
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

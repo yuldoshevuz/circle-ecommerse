@@ -1,0 +1,18 @@
+model Order {
+  id          String      @id @default(uuid())
+  user        User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     String
+  items       OrderItem[]
+  status      OrderStatus @default(PENDING)
+  total_price String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  DELIVERING
+  COMPLETED
+  CANCELED
+}

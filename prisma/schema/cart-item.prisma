@@ -1,0 +1,11 @@
+model CartItem {
+  id       String @id @default(uuid())
+  cart     Cart   @relation(fields: [cart_id], references: [id], onDelete: Cascade)
+  cart_id  String
+  stock    Stock  @relation(fields: [stock_id], references: [id], onDelete: Cascade)
+  stock_id String
+	quantity Int
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
