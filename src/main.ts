@@ -15,11 +15,11 @@ async function bootstrap() {
 
   app.use(cors());
   app.setGlobalPrefix('api');
-	app.useStaticAssets(path.join(process.cwd(), 'public'));
+  app.useStaticAssets(path.join(process.cwd(), 'public'));
 
   app.useGlobalPipes(
     new ValidationPipe({
-			whitelist: true,
+      whitelist: true,
       stopAtFirstError: true,
       exceptionFactory(validationError) {
         const errors = validationError.map(
@@ -33,7 +33,7 @@ async function bootstrap() {
           }),
         );
 
-				return new ValidationException(errors);
+        return new ValidationException(errors);
       },
     }),
   );

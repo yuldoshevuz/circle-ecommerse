@@ -4,7 +4,6 @@ export class OrderResponseDto {
 	id: string;
 	items: {
 		id: string;
-		quantity: number;
 		product: {
 			id: string;
 			title: string;
@@ -12,6 +11,12 @@ export class OrderResponseDto {
 			price: string;
 			thumbnail: string;
 		}
+		configurations: {
+			id: string;
+			title: string;
+			value: string;
+		}[];
+		quantity: number;
 	}[];
 	user_id: string;
 	status: OrderStatus;

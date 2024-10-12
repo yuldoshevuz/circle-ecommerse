@@ -1,4 +1,4 @@
-import { Body, Controller, Get, ParseFilePipe, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseFilePipe, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { PromoService } from "./promo.service";
 import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -35,5 +35,12 @@ export class PromoController {
 		image: Express.Multer.File
 	) {
 		return this.promoService.createPromo({ ...dto, image });
+	}
+
+	@Delete(':id')
+	@AuthDecorator(RoleUser['ADMIN'])
+	@ApiBearerAuth('accessToken')
+	async delete(@Param('id') id: string) {
+		await this.promoService.delete(id);
 	}
 }

@@ -44,13 +44,13 @@ export class ProductRepository {
         stocks: {
           include: {
             configurations: {
-              include: { attribute: true, values: true },
+              include: { attribute: true, value: true },
             },
           },
         },
-        // attributes: {
-        // 	include: { values: true },
-        // },
+        attributes: {
+          include: { values: true },
+        },
         categories: true,
         parameters: true,
       },
@@ -76,25 +76,28 @@ export class ProductRepository {
       },
       take: 5,
       orderBy: { created_at: 'desc' },
-			include: {
+      include: {
         images: true,
         brand: true,
         tags: true,
         stocks: {
           include: {
             configurations: {
-              include: { attribute: true, values: true },
+              include: { attribute: true, value: true },
             },
           },
         },
+        attributes: {
+          include: { values: true },
+        },
         categories: true,
         parameters: true,
-      }
+      },
     });
 
-		if (!products.length) throw new NotFoundException('Products not available');
+    if (!products.length) throw new NotFoundException('Products not available');
 
-		return products;
+    return products;
   }
 
   async findOne(
@@ -110,13 +113,13 @@ export class ProductRepository {
         stocks: {
           include: {
             configurations: {
-              include: { attribute: true, values: true },
+              include: { attribute: true, value: true },
             },
           },
         },
-        // attributes: {
-        // 	include: { values: true },
-        // },
+        attributes: {
+          include: { values: true },
+        },
         categories: true,
         parameters: true,
       },
@@ -147,46 +150,43 @@ export class ProductRepository {
       title,
       description,
       brand_id,
-      // attributes_id,
-      categories_id,
-      tags_id,
+      attributes,
       parameters,
       stocks,
+      categories,
+      tags,
     } = data;
 
     return this.prismaService.$transaction(async (prisma) => {
       await this.brandRepository.findById(brand_id);
 
-      // for (const attribute_id of attributes_id) {
-      //   await this.attributeRepository.findById(attribute_id);
-      // }
-
-      for (const category_id of categories_id) {
-        await this.categoryRepository.findById(category_id);
+      for (const attributeId of attributes) {
+        await this.attributeRepository.findById(attributeId);
       }
 
-      for (const tag_id of tags_id) {
-        await this.tagRepository.findById(tag_id);
+      for (const categoryId of categories) {
+        await this.categoryRepository.findById(categoryId);
+      }
+
+      for (const tagId of tags) {
+        await this.tagRepository.findById(tagId);
       }
 
       for (const stock of stocks) {
         for (const attribute of stock.attributes) {
-          const existsAttribute = await this.attributeRepository.findById(
-            attribute.id,
-          );
-          for (const valueId of attribute.values) {
-            const existsAttributeValue = await prisma.attributeValue.findFirst({
-              where: {
-                id: valueId,
-                attribute_id: existsAttribute.id,
-              },
-            });
+          await this.attributeRepository.findById(attribute.id);
 
-            if (!existsAttributeValue)
-              throw new NotFoundException(
-                'Attribute value not found with this id. ID: ' + valueId,
-              );
-          }
+          const existsAttributeValue = await prisma.attributeValue.findFirst({
+            where: {
+              id: attribute.value,
+              attribute_id: attribute.id,
+            },
+          });
+
+          if (!existsAttributeValue)
+            throw new NotFoundException(
+              'Attribute value not found with this id. ID: ' + attribute.value,
+            );
         }
       }
 
@@ -196,16 +196,14 @@ export class ProductRepository {
           description,
           slug: this.categoryRepository.slugger(title),
           brand: { connect: { id: brand_id } },
-          // attributes: {
-          //   connect: attributes_id.map((attribute_id) => ({
-          //     id: attribute_id,
-          //   })),
-          // },
+          attributes: {
+            connect: attributes.map((attrId) => ({ id: attrId })),
+          },
           categories: {
-            connect: categories_id.map((category_id) => ({ id: category_id })),
+            connect: categories.map((categoryId) => ({ id: categoryId })),
           },
           tags: {
-            connect: tags_id.map((tag_id) => ({ id: tag_id })),
+            connect: tags.map((tagId) => ({ id: tagId })),
           },
           parameters: {
             createMany: {
@@ -220,13 +218,9 @@ export class ProductRepository {
               quantity: stock.quantity,
               price: stock.price,
               configurations: {
-                create: stock.attributes.map((attribute) => ({
-                  attribute_id: attribute.id,
-                  values: {
-                    connect: attribute.values.map((value_id) => ({
-                      id: value_id,
-                    })),
-                  },
+                create: stock.attributes.map((attr) => ({
+                  attribute_id: attr.id,
+                  value_id: attr.value,
                 })),
               },
             })),
@@ -239,13 +233,13 @@ export class ProductRepository {
           stocks: {
             include: {
               configurations: {
-                include: { attribute: true, values: true },
+                include: { attribute: true, value: true },
               },
             },
           },
-          // attributes: {
-          // 	include: { values: true },
-          // },
+          attributes: {
+            include: { values: true },
+          },
           categories: true,
           parameters: true,
         },
@@ -262,9 +256,9 @@ export class ProductRepository {
       title,
       description,
       brand_id,
-      // attributes_id,
-      categories_id,
-      tags_id,
+      attributes,
+      categories,
+      tags,
       parameters,
       stocks,
     } = data;
@@ -275,44 +269,41 @@ export class ProductRepository {
         await this.brandRepository.findById(brand_id);
       }
 
-      // if (attributes_id?.length) {
-      //   for (const attribute_id of attributes_id) {
-      // 		await this.attributeRepository.findById(attribute_id);
-      //   }
-      // }
-
-      if (categories_id?.length) {
-        for (const category_id of categories_id) {
-          await this.categoryRepository.findById(category_id);
+      if (attributes?.length) {
+        for (const attributeId of attributes) {
+          await this.attributeRepository.findById(attributeId);
         }
       }
 
-      if (tags_id?.length) {
-        for (const tag_id of tags_id) {
-          await this.tagRepository.findById(tag_id);
+      if (categories?.length) {
+        for (const categoryId of categories) {
+          await this.categoryRepository.findById(categoryId);
+        }
+      }
+
+      if (tags?.length) {
+        for (const tagId of tags) {
+          await this.tagRepository.findById(tagId);
         }
       }
 
       if (stocks?.length) {
         for (const stock of stocks) {
           for (const attribute of stock.attributes) {
-            const existsAttribute = await this.attributeRepository.findById(
-              attribute.id,
-            );
-            for (const valueId of attribute.values) {
-              const existsAttributeValue =
-                await prisma.attributeValue.findFirst({
-                  where: {
-                    id: valueId,
-                    attribute_id: existsAttribute.id,
-                  },
-                });
+            await this.attributeRepository.findById(attribute.id);
 
-              if (!existsAttributeValue)
-                throw new NotFoundException(
-                  'Attribute value not found with this id. ID: ' + valueId,
-                );
-            }
+            const existsAttributeValue = await prisma.attributeValue.findFirst({
+              where: {
+                id: attribute.value,
+                attribute_id: attribute.id,
+              },
+            });
+
+            if (!existsAttributeValue)
+              throw new NotFoundException(
+                'Attribute value not found with this id. ID: ' +
+                  attribute.value,
+              );
           }
         }
       }
@@ -325,28 +316,28 @@ export class ProductRepository {
           slug: title
             ? this.categoryRepository.slugger(title)
             : existingProduct.slug,
-          brand: brand_id && { connect: { id: brand_id } },
-          // attributes: attributes_id && {
-          //   disconnect: existingProduct.attributes.map((attribute) => ({
-          //     id: attribute.id,
-          //   })),
-          //   connect: attributes_id.map((attribute_id) => ({
-          //     id: attribute_id,
-          //   })),
-          // },
-          categories: categories_id && {
+          brand_id: brand_id && brand_id,
+          attributes: attributes && {
+            disconnect: existingProduct.attributes.map((attr) => ({
+              id: attr.id,
+            })),
+            connect: attributes.map((attrId) => ({
+              id: attrId,
+            })),
+          },
+          categories: categories && {
             disconnect: existingProduct.categories.map((category) => ({
               id: category.id,
             })),
-            connect: categories_id.map((category_id) => ({
+            connect: categories.map((category_id) => ({
               id: category_id,
             })),
           },
-          tags: tags_id && {
+          tags: tags && {
             disconnect: existingProduct.tags.map((tag) => ({
               id: tag.id,
             })),
-            connect: tags_id.map((tag_id) => ({ id: tag_id })),
+            connect: tags.map((tagId) => ({ id: tagId })),
           },
           parameters: parameters && {
             deleteMany: existingProduct.parameters.map((parameter) => ({
@@ -367,13 +358,9 @@ export class ProductRepository {
               quantity: stock.quantity,
               price: stock.price,
               configurations: {
-                create: stock.attributes.map((attribute) => ({
-                  attribute_id: attribute.id,
-                  values: {
-                    connect: attribute.values.map((value_id) => ({
-                      id: value_id,
-                    })),
-                  },
+                create: stock.attributes.map((attr) => ({
+                  attribute_id: attr.id,
+                  value_id: attr.value,
                 })),
               },
             })),
@@ -386,13 +373,13 @@ export class ProductRepository {
           stocks: {
             include: {
               configurations: {
-                include: { attribute: true, values: true },
+                include: { attribute: true, value: true },
               },
             },
           },
-          // attributes: {
-          // 	include: { values: true },
-          // },
+          attributes: {
+            include: { values: true },
+          },
           categories: true,
           parameters: true,
         },
@@ -400,6 +387,29 @@ export class ProductRepository {
 
       return updatedProduct;
     });
+  }
+
+  async toggleFavourite(productId: string, userId: string): Promise<IProduct> {
+    await this.findById(productId);
+
+    const existsFavourite = await this.prismaService.product.findFirst({
+      where: {
+        favourite_users: {
+          some: { id: userId },
+        },
+      },
+    });
+
+    await this.prismaService.product.update({
+      where: { id: productId },
+      data: {
+        favourite_users: existsFavourite
+          ? { disconnect: { id: userId } }
+          : { connect: { id: userId } },
+      },
+    });
+
+    return await this.findById(productId);
   }
 
   async delete(id: string): Promise<void> {
@@ -415,9 +425,9 @@ export class ProductRepository {
       },
       brand: true,
       tags: true,
-      // attributes: {
-      //   include: { values: true },
-      // },
+      attributes: {
+        include: { values: true },
+      },
       parameters: true,
     };
   }

@@ -1,4 +1,4 @@
-import { AttributeValue, NavbarModelType } from "@prisma/client";
+import { NavbarModelType } from "@prisma/client";
 import { IMedia } from "src/repositories/interfaces/media.interface";
 
 export class ProductManyResponseDto {
@@ -64,14 +64,14 @@ export class ProductOneResponseDto {
 		slug: string;
 		type: NavbarModelType;
 	}[];
-	// attributes: {
-	// 	id: string;
-	// 	title: string;
-	// 	data: {
-	// 		id: string;
-	// 		value: string;
-	// 	}[];
-	// }[];
+	attributes: {
+		id: string;
+		title: string;
+		data: {
+			id: string;
+			value: string;
+		}[];
+	}[];
 	images: IMedia[];
 	stocks: {
 		id: string;
@@ -80,10 +80,7 @@ export class ProductOneResponseDto {
 		configurations: {
 			id: string;
 			title: string;
-			values: {
-				id: string;
-				value: string;
-			}[];
+			value: string;
 		}[];
 	}[];
 	parameters: {

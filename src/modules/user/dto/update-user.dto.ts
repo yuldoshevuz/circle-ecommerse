@@ -12,14 +12,4 @@ export class UpdateUserDto {
 	@IsString()
 	@IsOptional()
 	email?: string;
-
-	@ApiPropertyOptional({ example: 'qwerty12345' })
-	@IsString()
-	@IsOptional()
-	old_password?: string;
-
-	@ApiPropertyOptional({ example: '12345qwerty' })
-	@IsString()
-	@IsOptional()
-	password?: string;
 }

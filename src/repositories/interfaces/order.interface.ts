@@ -8,7 +8,9 @@ export type IOrder = Prisma.OrderGetPayload<{
       include: {
         stock: {
           include: {
-            configurations: true;
+            configurations: {
+							include: { attribute: true, value: true };
+						};
             product: {
               include: { images: true };
             };

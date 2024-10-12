@@ -1,17 +1,18 @@
 model Product {
-  id          String      @id @default(uuid())
-  title       String
-  slug        String      @unique
-  description String
-  promo       Promo?
-  brand       Brand       @relation(fields: [brand_id], references: [id], onDelete: Cascade)
-  brand_id    String
-  parameters  Parameter[]
-  // attributes  Attribute[] @relation("ProductAttribute")
-  stocks      Stock[]
-  categories  Category[]  @relation("CategoryProduct")
-  tags        Tag[]       @relation("ProductTag")
-  images      Media[]
+  id              String      @id @default(uuid())
+  title           String
+  slug            String      @unique
+  description     String
+  promo           Promo?
+  brand           Brand       @relation(fields: [brand_id], references: [id], onDelete: Cascade)
+  brand_id        String
+  parameters      Parameter[]
+  attributes      Attribute[] @relation("ProductAttribute")
+  stocks          Stock[]
+  categories      Category[]  @relation("CategoryProduct")
+  tags            Tag[]       @relation("ProductTag")
+  images          Media[]
+  favourite_users User[]      @relation("UserFavourite")
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

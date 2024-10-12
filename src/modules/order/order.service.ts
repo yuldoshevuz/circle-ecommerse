@@ -71,11 +71,16 @@ export class OrderService {
           id: item.stock.product.id,
           title: item.stock.product.title,
           slug: item.stock.product.title,
+					price: item.stock.price,
           thumbnail: item.stock.product.images?.length
-            ? process.env.BASE_URL + item.stock.product.images[0].path
+            ? process.env.BASE_URL + '/images/' + item.stock.product.images[0].path
             : null,
-          price: item.stock.price,
         },
+				configurations: item.stock.configurations.map(config => ({
+					id: config.id,
+					title: config.attribute.title,
+					value: config.value.value,
+				})),
         quantity: item.quantity,
       })),
       total_price: order.total_price,

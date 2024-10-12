@@ -10,6 +10,7 @@ export const setupSwagger = (app: INestApplication): void => {
       'E-commerse API Docs',
     )
     .setVersion('1.0.0')
+		.addTag('Home')
     .addTag('Auth')
 		.addTag('User')
 		.addTag('Navbar')

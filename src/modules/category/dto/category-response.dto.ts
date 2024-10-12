@@ -33,6 +33,7 @@ export class CategoryResponseDto {
 	id: string;
 	title: string;
 	slug: string;
+	is_featured: boolean;
 	images: IMedia[] | [];
 	children: ChildCategoryDto[];
 	products: ChildProductDto[];

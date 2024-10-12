@@ -4,7 +4,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryRepository } from 'src/repositories/category.repository';
 import { ICategory } from 'src/repositories/interfaces/category.interface';
-import { Category, NavbarModelType } from '@prisma/client';
+import { NavbarModelType } from '@prisma/client';
 
 @Injectable()
 export class CategoryService {
@@ -13,7 +13,7 @@ export class CategoryService {
   ) {}
 
   async findAll(): Promise<CategoryResponseDto[]> {
-    const categories = await this.categoryRepository.findAll();
+    const categories = await this.categoryRepository.findAll({ parent_id: null });
     return categories.map((category) => this.formatResponse(category));
   }
 
@@ -31,6 +31,9 @@ export class CategoryService {
     id: string,
     dto: UpdateCategoryDto,
   ): Promise<CategoryResponseDto> {
+		console.log(dto);
+		
+
     const updatedCategory = await this.categoryRepository.update(id, dto);
 		return this.formatResponse(updatedCategory);
   }
@@ -44,13 +47,14 @@ export class CategoryService {
       id: category.id,
       title: category.title,
 			slug: category.slug,
-      images: category.images.map(({ id, path }) => ({ id, path: process.env.BASE_URL + path })),
+			is_featured: category.is_featured,
+      images: category.images.map(({ id, path }) => ({ id, path: process.env.BASE_URL + '/images/' + path })),
       children: category.children.map((item) => ({
         id: item.id,
 				title: item.title,
 				slug: item.slug,
 				type: NavbarModelType['categories'],
-				images: item.images.map(({ id, path }) => ({ id, path: process.env.BASE_URL + path }))
+				images: item.images.map(({ id, path }) => ({ id, path: process.env.BASE_URL + '/images/' + path }))
       })),
       products: category.products.map(product => ({
 				id: product.id,
@@ -61,7 +65,7 @@ export class CategoryService {
 					title: product.brand.title,
 					slug: product.brand.slug,
 				},
-				images: product.images.map(({ id, path }) => ({ id, path: process.env.BASE_URL + path })),
+				images: product.images.map(({ id, path }) => ({ id, path: process.env.BASE_URL + '/images/' + path })),
 				tags: product.tags.map(({ id, title, slug }) => ({ id, title, slug, type: NavbarModelType.tags })),
 			})),
     };

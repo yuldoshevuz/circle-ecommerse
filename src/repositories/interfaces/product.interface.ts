@@ -10,13 +10,13 @@ export type IProduct = Prisma.ProductGetPayload<{
     stocks: {
 			include: {
 				configurations: {
-					include: { attribute: true, values: true }
+					include: { attribute: true, value: true }
 				}
 			}
 		};
-		// attributes: {
-		// 	include: { values: true };
-		// };
+		attributes: {
+			include: { values: true };
+		};
 		categories: true;
 		parameters: true;
   };

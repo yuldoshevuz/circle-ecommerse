@@ -39,17 +39,22 @@ export class CartService {
   private formatResponse(cart: ICart): CartResponseDto[] {
     return cart.items.map(({ id, stock, quantity }) => ({
       id,
-      quantity,
       product: {
         id: stock.product.id,
         title: stock.product.title,
         slug: stock.product.slug,
-        price: stock.price,
+				price: stock.price,
         available_quantity: stock.quantity,
         thumbnail: stock.product.images?.length
-          ? process.env.BASE_URL + stock.product.images[0].path
+          ? process.env.BASE_URL + '/images/' + stock.product.images[0].path
           : null,
       },
+      configurations: stock.configurations.map((config) => ({
+        id: config.id,
+        title: config.attribute.title,
+        value: config.value.value,
+      })),
+      quantity,
     }));
   }
 }

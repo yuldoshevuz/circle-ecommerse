@@ -13,46 +13,26 @@ import {
 import { v4 } from 'uuid';
 
 export class CreateParameterDto {
-  @ApiProperty({ example: 'Model' })
   @IsString()
   @IsNotEmpty()
   title: string;
 
-  @ApiProperty({ example: 'Samsung' })
   @IsString()
   @IsNotEmpty()
   value: string;
 }
 
 export class AddAttributeDto {
-	@ApiProperty({ example: v4() })
   @IsString()
   @IsNotEmpty()
 	id: string;
 
-	@ApiProperty({
-		example: [ v4(), v4(), v4() ]
-	})
-  @IsString({ each: true })
-	@IsArray()
+  @IsString()
   @IsNotEmpty()
-	values: string[];
+	value: string;
 }
 
 export class CreateStockDto {
-  @ApiProperty({
-    example: [
-			{
-				id: v4(),
-				values: [ v4(), v4(), v4() ]
-			},
-			{
-				id: v4(),
-				values: [ v4(), v4() ]
-			}
-		],
-    description: 'List of AttributeValue IDs for the stock.',
-  })
 	@Type(() => AddAttributeDto)
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
@@ -60,12 +40,10 @@ export class CreateStockDto {
   @IsNotEmpty()
   attributes: AddAttributeDto[];
 
-  @ApiProperty({ example: 50 })
   @IsNumber()
   @IsNotEmpty()
   quantity: number;
 
-  @ApiProperty({ example: '499.99' })
   @IsNumberString() // Use IsString for price
   @IsNotEmpty()
   price: string;
@@ -104,17 +82,16 @@ export class CreateProductDto {
   @IsNotEmpty()
   parameters: CreateParameterDto[];
 
-  // @ApiProperty({
-  //   type: 'string',
-  //   isArray: true,
-  //   example: [v4(), v4()],
-  // })
-  // @ArrayMinSize(1)
-  // @IsArray()
-  // @IsUUID('all', { each: true })
-  // @IsString({ each: true })
-  // @IsNotEmpty()
-  // attributes_id: string[];
+  @ApiProperty({
+    type: 'string',
+    isArray: true,
+    example: [v4(), v4()],
+  })
+  @ArrayMinSize(1)
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty()
+  attributes: string[];
 
   @ApiProperty({
     type: CreateStockDto,
@@ -124,11 +101,11 @@ export class CreateProductDto {
         attributes: [
 					{
 						id: v4(),
-						values: [ v4(), v4() ]
+						value: v4(),
 					},
 					{
 						id: v4(),
-						values: [ v4(), v4(), v4() ]
+						value: v4(),
 					}
 				],
         quantity: 50,
@@ -138,11 +115,11 @@ export class CreateProductDto {
         attributes: [
 					{
 						id: v4(),
-						values: [ v4(), v4() ]
+						value: v4()
 					},
 					{
 						id: v4(),
-						values: [ v4(), v4(), v4() ]
+						value: v4(),
 					}
 				],
         quantity: 65,
@@ -163,7 +140,7 @@ export class CreateProductDto {
   @IsString({ each: true })
   @IsNotEmpty()
   @IsUUID('all', { each: true })
-  categories_id: string[];
+  categories: string[];
 
   @ApiProperty({
     type: 'array',
@@ -175,5 +152,5 @@ export class CreateProductDto {
   @IsString({ each: true })
   @IsNotEmpty()
   @IsUUID('all', { each: true })
-  tags_id: string[];
+  tags: string[];
 }

@@ -1,5 +1,5 @@
 import { RoleUser } from '@prisma/client';
-import { RegisterUserDto } from 'src/modules/auth/dto/register-user.dto';
+import { GoogleOauthDto } from 'src/modules/auth/dto/google-oauth.dto';
 import { UpdateUserDto } from 'src/modules/user/dto/update-user.dto';
 
 export interface IUser {
@@ -9,6 +9,6 @@ export interface IUser {
   role: RoleUser;
 }
 
-export interface CreateUser extends RegisterUserDto {}
+export interface CreateUser extends GoogleOauthDto {};
 
-export type UpdateUser = Omit<UpdateUserDto, 'old_password'>;
+export interface UpdateUser extends UpdateUserDto {};

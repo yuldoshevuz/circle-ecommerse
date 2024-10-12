@@ -3,7 +3,7 @@ model AttributeValue {
   value          String
   attribute      Attribute            @relation(fields: [attribute_id], references: [id], onDelete: Cascade)
   attribute_id   String
-  configurations StockConfiguration[] @relation("StockConfigurationAttributeValue")
+  configurations StockConfiguration[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

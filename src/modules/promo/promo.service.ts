@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PromoRepository } from 'src/repositories/promo.repository';
 import { HomePagePromoDto } from './dto/home-page-promo.dto';
-import { title } from 'process';
 import { CreatePromoDto } from './dto/create-promo.dto';
 import { IPromo } from 'src/repositories/interfaces/promo.interface';
 
@@ -12,14 +11,20 @@ export class PromoService {
 	async createPromo(dto: CreatePromoDto): Promise<IPromo> {
 		const newPromo = await this.promoRepository.create({
 			...dto,
-			image: dto.image?.path
+			image: dto.image?.filename
 		});
 
 		return newPromo;
 	}
 
   async findAll(): Promise<IPromo[]> {
-    return await this.promoRepository.findAll();
+    const promos = await this.promoRepository.findAll({
+			type: { notIn: [ 'main_left', 'main_right' ] }
+		});
+		return promos.map(promo => ({
+			...promo,
+			image: promo.image ? process.env.BASE_URL + '/images/' + promo.image : null
+		}));
   }
 
   async homePagePromo(): Promise<HomePagePromoDto> {
@@ -35,7 +40,7 @@ export class PromoService {
 				title: left.title,
 				type: 'main_left',
 				body: left.body,
-				image: left.image,
+				image: process.env.BASE_URL + '/images/' + left.image,
 				product: {
 					id: left.product.id,
 					title: left.product.title,
@@ -46,7 +51,8 @@ export class PromoService {
 						title: left.product.brand.title,
 						slug: left.product.brand.slug
 					},
-					thumbnail: left.image
+					thumbnail: left.product?.images
+						? process.env.BASE_URL + '/images/' + left.product.images[0].path : null,
 				}
 			},
 			right: {
@@ -54,7 +60,7 @@ export class PromoService {
 				title: right.title,
 				type: 'main_right',
 				body: right.body,
-				image: right.image,
+				image: process.env.BASE_URL + '/images/' + right.image,
 				product: {
 					id: right.product.id,
 					title: right.product.title,
@@ -65,9 +71,13 @@ export class PromoService {
 						title: right.product.brand.title,
 						slug: right.product.brand.slug
 					},
-					thumbnail: right.image
+					thumbnail: process.env.BASE_URL + '/images/' + right.image
 				}
 			}
 		}
   }
+
+	async delete(id: string) {
+		await this.promoRepository.delete({ id });
+	}
 }

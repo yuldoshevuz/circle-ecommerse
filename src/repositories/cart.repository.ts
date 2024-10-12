@@ -31,7 +31,9 @@ export class CartRepository {
           include: {
             stock: {
               include: {
-                configurations: true,
+                configurations: {
+									include: { attribute: true, value: true },
+								},
                 product: {
                   include: { images: true },
                 },
@@ -135,7 +137,9 @@ export class CartRepository {
             include: {
               stock: {
                 include: {
-                  configurations: true,
+                  configurations: {
+										include: { attribute: true, value: true },
+									},
                   product: true,
                 },
               },

@@ -25,9 +25,10 @@ import { CreateProductImageDto } from './dto/create-product-image.dto';
 import { CreateMedia } from 'src/repositories/interfaces/media.interface';
 import { NavbarModelType, RoleUser } from '@prisma/client';
 import { CheckExistsModel } from 'src/common/guards/check-exists-model.guard';
-import { Request } from 'express';
 import { AuthDecorator } from '../auth/decorators/auth.decorator';
 import { RequestWithUser } from 'src/common/interfaces/request-with-user.interface';
+import { Request } from 'express';
+import { ToggleProductFavouriteDto } from './dto/toggle-favourite.dto';
 
 @Controller('product')
 @ApiTags('Product')
@@ -38,11 +39,34 @@ export class ProductController {
   ) {}
 
   @Get()
-  async findAll(@Query() query: ProductsQueryDto, @Req() request: Request) {
-    return this.productService.findAll(query, request);
+  async findAll(
+    @Query() query: ProductsQueryDto,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.productService.findAll(query, request, false);
   }
 
-	@Get('search')
+  @Get('favourite')
+  @AuthDecorator(RoleUser['USER'])
+  @ApiBearerAuth('accessToken')
+  async findFavourites(
+    @Query() query: ProductsQueryDto,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.productService.findAll(query, request, true);
+  }
+
+  @Post('favourite')
+  @AuthDecorator(RoleUser['USER'])
+  @ApiBearerAuth('accessToken')
+  async toggleFavourite(
+    @Req() request: RequestWithUser,
+    @Body() dto: ToggleProductFavouriteDto,
+  ) {
+    return this.productService.toggleProductFavourite(dto, request);
+  }
+
+  @Get('search')
   async search(@Query('title') title: string) {
     return this.productService.search(title);
   }

@@ -30,7 +30,9 @@ export class OrderRepository {
           include: {
             stock: {
               include: {
-                configurations: true,
+                configurations: {
+									include: { attribute: true, value: true }
+								},
                 product: {
                   include: { images: true },
                 },
@@ -57,7 +59,9 @@ export class OrderRepository {
           include: {
             stock: {
               include: {
-                configurations: true,
+                configurations: {
+									include: { attribute: true, value: true }
+								},
                 product: {
                   include: { images: true },
                 },
@@ -109,7 +113,9 @@ export class OrderRepository {
             include: {
               stock: {
                 include: {
-                  configurations: true,
+                  configurations: {
+										include: { attribute: true, value: true }
+									},
                   product: {
                     include: { images: true },
                   },
@@ -150,7 +156,9 @@ export class OrderRepository {
             include: {
               stock: {
                 include: {
-                  configurations: true,
+                  configurations: {
+										include: { attribute: true, value: true }
+									},
                   product: {
                     include: { images: true },
                   },

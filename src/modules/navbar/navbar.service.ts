@@ -16,34 +16,34 @@ export class NavbarService {
     const header = await this.navbarRepository.findAll({
       type: NavbarType['header'],
     });
-    return { header: this.formatNavbar(header) };
+    return { header: header.map(item => this.formatNavbar(item)) };
   }
 
   async getFooter(): Promise<FooterResponseDto> {
     const footer = await this.navbarRepository.findAll({
       type: NavbarType['footer'],
     });
-    return { footer: this.formatNavbar(footer) };
+    return { footer: footer.map(item => this.formatNavbar(item)) };
   }
 
   async createNavbarItem(
     dto: CreateNavbarItemDto,
     navbarType: NavbarType,
   ): Promise<NavbarResponseDto> {
-    await this.navbarRepository.create(dto, navbarType);
-    return { title: dto.text, slug: dto.slug, type: dto.model_type, image: dto.image?.path || null };
+    const newNavbarItem = await this.navbarRepository.create(dto, navbarType);
+    return this.formatNavbar(newNavbarItem);
   }
 
 	async removeNavbarItem(slug: string) {
 		await this.navbarRepository.remove(slug);
 	}
 
-  private formatNavbar(navbar: Navbar[]): NavbarResponseDto[] {
-    return navbar.map((item) => ({
-      title: item.text,
-      slug: item.slug,
-      type: item.model_type,
-			image: item.image || null,
-    }));
+  private formatNavbar(navbar: Navbar): NavbarResponseDto {
+    return {
+			title: navbar.text,
+      slug: navbar.slug,
+      type: navbar.model_type,
+			image: navbar.image || null,
+		}
   }
 }

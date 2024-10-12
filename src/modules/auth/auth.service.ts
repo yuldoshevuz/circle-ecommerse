@@ -1,11 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from 'src/repositories/user.repository';
-import { RegisterUserDto } from './dto/register-user.dto';
-import { User } from '@prisma/client';
-import * as bcryptjs from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { AuthResponseDto } from './dto/auth-response.dto';
-import { LoginUserDto } from './dto/login-user.dto';
+import { GoogleOauthDto } from './dto/google-oauth.dto';
+import { IUser } from 'src/repositories/interfaces/user.interface';
 import { RequestWithUser } from 'src/common/interfaces/request-with-user.interface';
 
 @Injectable()
@@ -15,40 +13,39 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(dto: RegisterUserDto): Promise<AuthResponseDto> {
-    const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(dto.password, salt);
+  async validate(dto: GoogleOauthDto): Promise<IUser> {
+    let user = await this.userRepository.findByEmail(dto.email);
 
-    const newUser = await this.userRepository.create({ ...dto, password: hashedPassword });
-		const accessToken = await this.generateToken(newUser.id);
+    if (!user) {
+      user = await this.userRepository.create(dto);
+    }
 
-		return this.formatResponse(newUser, accessToken);
+    return user;
   }
 
-	async login(dto: LoginUserDto): Promise<AuthResponseDto> {
-		const user = await this.userRepository.findByEmail(dto.email);
+  async login(request: RequestWithUser): Promise<AuthResponseDto> {
+    const { user } = request;
+    if (!user) {
+      throw new UnauthorizedException('No user found');
+    }
 
-		const isMatchPassword = await bcryptjs.compare(dto.password, user.password);
-		if (!isMatchPassword) throw new BadRequestException('Incorrect password');
-
-		const accessToken = await this.generateToken(user.id);
-		return this.formatResponse(user, accessToken);
-	}
-
-  private async generateToken(user_id: string): Promise<string> {
-    const token = await this.jwtService.signAsync({ user_id });
-    return token;
+    const accessToken = await this.generateToken(user.id);
+    return this.formatResponse(user, accessToken);
   }
 
-  private formatResponse(user: User, access_token: string): AuthResponseDto {
+  private async generateToken(userId: string): Promise<string> {
+    return this.jwtService.signAsync({ sub: userId });
+  }
+
+  private formatResponse(user: IUser, accessToken: string): AuthResponseDto {
     return {
       user: {
         id: user.id,
         full_name: user.full_name,
         email: user.email,
-				role: user.role,
+        role: user.role,
       },
-      access_token,
+      access_token: accessToken,
     };
   }
 }

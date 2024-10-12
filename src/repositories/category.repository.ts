@@ -14,13 +14,14 @@ import { CreateCategoryDto } from 'src/modules/category/dto/create-category.dto'
 export class CategoryRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findAll(where?: Prisma.CategoryWhereInput): Promise<ICategory[]> {
+  async findAll(where?: Prisma.CategoryWhereInput, limit?: number): Promise<ICategory[]> {
     if (where?.id && !isUUID(where.id, 'all'))
       throw new BadRequestException('Invalid ID');
 
     const categories = await this.prismaService.category.findMany({
       where,
-      include: this.include
+      include: this.include,
+			take: limit,
     });
 
     if (!categories.length)
@@ -68,7 +69,7 @@ export class CategoryRepository {
           createMany: {
             data: data.images?.map((item) => ({
               model_type: NavbarModelType['categories'],
-              path: item.path,
+              path: item.filename,
             })),
           },
         },
@@ -81,7 +82,7 @@ export class CategoryRepository {
 
   async update(id: string, data: UpdateCategoryDto): Promise<ICategory> {
     await this.findById(id, 'Category not found with this id');
-    const { title, description, images, parentId } = data;
+    const { title, description, images, parentId, is_featured } = data;
 
 		if (parentId) await this.findById(parentId, 'Parent category no available with this id');
 
@@ -93,11 +94,12 @@ export class CategoryRepository {
         slug: title && this.slugger(title),
         description,
         parent_id: parentId || null,
+				is_featured,
         images: {
           createMany: {
             data: images?.map((item) => ({
               model_type: NavbarModelType['categories'],
-              path: item.path,
+              path: item.filename,
             })),
           },
         },

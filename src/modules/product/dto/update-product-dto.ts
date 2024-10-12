@@ -37,17 +37,16 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
   @IsOptional()
   parameters?: CreateParameterDto[];
 
-  // @ApiPropertyOptional({
-  //   type: 'string',
-  //   isArray: true,
-  //   example: [v4(), v4()],
-  // })
-  // @ArrayMinSize(1)
-  // @IsArray()
-  // @IsUUID('all', { each: true })
-  // @IsString({ each: true })
-  // @IsOptional()
-  // attributes_id: string[];
+  @ApiPropertyOptional({
+    type: 'string',
+    isArray: true,
+    example: [v4(), v4()],
+  })
+  @ArrayMinSize(1)
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  attributes?: string[];
 
   @ApiPropertyOptional({
     type: CreateStockDto,
@@ -57,11 +56,11 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
         attributes: [
 					{
 						id: v4(),
-						values: [ v4(), v4() ]
+						value: v4(),
 					},
 					{
 						id: v4(),
-						values: [ v4(), v4(), v4() ]
+						value: v4(),
 					}
 				],
         quantity: 50,
@@ -71,11 +70,11 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
         attributes: [
 					{
 						id: v4(),
-						values: [ v4(), v4() ]
+						value: v4()
 					},
 					{
 						id: v4(),
-						values: [ v4(), v4(), v4() ]
+						value: v4(),
 					}
 				],
         quantity: 65,
@@ -90,13 +89,15 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
   @IsOptional()
   stocks?: CreateStockDto[];
 
+	
+
   @ApiPropertyOptional({ example: [v4(), v4()] })
   @IsArray()
   @ArrayMinSize(1)
   @IsString({ each: true })
   @IsOptional()
   @IsUUID('all', { each: true })
-  categories_id?: string[];
+  categories: string[];
 
   @ApiPropertyOptional({
     type: 'array',
@@ -108,5 +109,5 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
   @IsString({ each: true })
   @IsOptional()
   @IsUUID('all', { each: true })
-  tags_id?: string[];
+  tags: string[];
 }

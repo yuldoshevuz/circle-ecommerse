@@ -9,8 +9,9 @@ import {
 } from './dto/product-response.dto';
 import { NavbarModelType, Prisma } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
-import { Request } from 'express';
 import { ProductsQueryDto } from './dto/product.dto';
+import { RequestWithUser } from 'src/common/interfaces/request-with-user.interface';
+import { ToggleProductFavouriteDto } from './dto/toggle-favourite.dto';
 
 @Injectable()
 export class ProductService {
@@ -20,9 +21,21 @@ export class ProductService {
   ) {}
 
   async findAll(
-    { pageNumber, pageSize, category, tags, brand }: ProductsQueryDto,
-    request: Request,
+    dto: ProductsQueryDto,
+    request: RequestWithUser,
+    favourite: boolean = false,
   ): Promise<ProductManyResponseDto> {
+    const {
+      pageNumber,
+      pageSize,
+      category,
+      tags,
+      brand,
+      price_from,
+      price_to,
+    } = dto;
+    const userId = request.user?.id;
+
     const productWhere: Prisma.ProductWhereInput = {
       categories: {
         some: { id: category },
@@ -32,6 +45,15 @@ export class ProductService {
       },
       brand: {
         id: brand,
+      },
+      favourite_users: (favourite && { some: { id: userId } }) || {},
+      stocks: {
+        some: {
+          price: {
+            lte: price_to,
+            gte: price_from,
+          },
+        },
       },
     };
 
@@ -78,6 +100,18 @@ export class ProductService {
     return this.formatResponseOne(updated);
   }
 
+  async toggleProductFavourite(
+    dto: ToggleProductFavouriteDto,
+    request: RequestWithUser,
+  ): Promise<ProductOneResponseDto> {
+    const userId = request.user.id;
+    const product = await this.productRepository.toggleFavourite(
+      dto.product_id,
+      userId,
+    );
+    return this.formatResponseOne(product);
+  }
+
   async delete(id: string): Promise<void> {
     await this.productRepository.delete(id);
   }
@@ -89,7 +123,7 @@ export class ProductService {
       slug: product.slug,
       description: product.description,
       thumbnail: product.images?.length
-        ? process.env.BASE_URL + product.images[0]?.path
+        ? process.env.BASE_URL + '/images/' + product.images[0]?.path
         : null,
       price: product.stocks[0].price,
       brand: {
@@ -103,25 +137,21 @@ export class ProductService {
         slug: tag.slug,
         type: NavbarModelType['tags'],
       })),
-      // attributes: product.attributes.map(attr => ({
-      // 	id: attr.id,
-      // 	title: attr.title,
-      // 	data: attr.values.map(val => ({ id: val.id, value: val.value })),
-      // })),
+      attributes: product.attributes.map((attr) => ({
+        id: attr.id,
+        title: attr.title,
+        data: attr.values.map((val) => ({ id: val.id, value: val.value })),
+      })),
       images: product.images.map((image) => ({
         id: image.id,
-        path: process.env.BASE_URL + image.path,
+        path: process.env.BASE_URL + '/images/' + image.path,
       })),
       stocks: product.stocks.map((stock) => ({
         id: stock.id,
         configurations: stock.configurations.map((config) => ({
           id: config.id,
-          title: config.attribute?.title,
-          values:
-            config.values?.map((val) => ({
-              id: val.id,
-              value: val.value,
-            })) || [],
+          title: config.attribute.title,
+          value: config.value.value,
         })),
         quantity: stock.quantity,
         price: stock.price,
@@ -178,7 +208,7 @@ export class ProductService {
         thumbnail: product.images?.length
           ? {
               id: product.images[0].id,
-              path: process.env.BASE_URL + product.images[0].path,
+              path: process.env.BASE_URL + '/images/' + product.images[0].path,
             }
           : null,
         price: product.stocks[0].price,

@@ -6,7 +6,7 @@ import {
 import { isUUID } from 'class-validator';
 import { CreateMedia, IMedia } from './interfaces/media.interface';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Media, Prisma } from '@prisma/client';
 import { ProductRepository } from './product.repository';
 import { CategoryRepository } from './category.repository';
 
@@ -24,11 +24,10 @@ export class MediaRepository {
 
     const media = await this.prismaService.media.findMany({
       where,
-      select: this.select,
     });
     if (!media.length) throw new NotFoundException('Media no available');
 
-    return media;
+    return media.map(image => this.formatResponse(image));
   }
 
   async findOne(where: Prisma.MediaWhereInput): Promise<IMedia> {
@@ -37,11 +36,10 @@ export class MediaRepository {
 
     const media = await this.prismaService.media.findFirst({
       where,
-      select: this.select,
-    });
+		});
     if (!media) throw new NotFoundException('Media not found');
 
-    return media;
+    return this.formatResponse(media);
   }
 
   async findById(id: string): Promise<IMedia> {
@@ -51,23 +49,21 @@ export class MediaRepository {
   async create(data: CreateMedia): Promise<IMedia> {
     const { model_type, model_id, path } = data;
 
-    let newMedia: IMedia;
+    let newMedia: Media;
 
     if (model_type === 'categories') {
       await this.categoryRepository.findById(model_id);
       newMedia = await this.prismaService.media.create({
-        data: { model_type, path: `/images/${path}`, category_id: model_id },
-        select: this.select,
+        data: { model_type, path, category_id: model_id },
       });
     } else if (model_type === 'products') {
       await this.productRepository.findById(model_id);
       newMedia = await this.prismaService.media.create({
-        data: { model_type, path: `/images/${path}`, product_id: model_id },
-        select: this.select,
+        data: { model_type, path, product_id: model_id },
       });
     }
 
-    return newMedia;
+    return this.formatResponse(newMedia);
   }
 
   async bulkCreate(...data: CreateMedia[]): Promise<IMedia[]> {
@@ -90,10 +86,10 @@ export class MediaRepository {
     });
   }
 
-  private get select(): Prisma.MediaSelect {
-    return {
-      id: true,
-      path: true,
-    };
-  }
+	private formatResponse(media: Media): IMedia {
+		return {
+			id: media.id,
+			path: process.env.BASE_URL + '/images/' + media.path,
+		}
+	}
 }

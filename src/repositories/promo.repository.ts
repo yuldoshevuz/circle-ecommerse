@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreatePromo, IPromo } from './interfaces/promo.interface';
@@ -13,11 +17,11 @@ export class PromoRepository {
 
   async findAll(
     where?: Prisma.PromoWhereInput,
-    take?: number,
+    limit?: number,
   ): Promise<IPromo[]> {
     const promos = await this.prismaService.promo.findMany({
       where,
-      take,
+      take: limit,
       orderBy: { created_at: 'desc' },
       include: this.include,
     });
@@ -44,6 +48,13 @@ export class PromoRepository {
       'Product not found with this id',
     );
 
+    const existsPromo = await this.prismaService.promo.findFirst({
+      where: { product_id: data.product_id },
+    });
+
+    if (existsPromo)
+      throw new BadRequestException('Promo already exists with this product');
+
     const newPromo = await this.prismaService.promo.create({
       data: { ...data, image: data.image || null },
       include: this.include,
@@ -52,10 +63,17 @@ export class PromoRepository {
     return newPromo;
   }
 
+  async delete(where?: Prisma.PromoWhereInput): Promise<void> {
+    const existsPromo = await this.findOne(where);
+    await this.prismaService.promo.delete({
+      where: { id: existsPromo.id },
+    });
+  }
+
   get include() {
     return {
       product: {
-        include: { brand: true, stocks: true },
+        include: { brand: true, stocks: true, images: true },
       },
     };
   }

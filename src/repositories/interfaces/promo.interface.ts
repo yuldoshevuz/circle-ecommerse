@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 
 export type IPromo = Prisma.PromoGetPayload<{
 	include: {
-		product: { include: { brand: true, stocks: true } }
+		product: { include: { brand: true, stocks: true, images: true } }
 	}
 }>
 

@@ -51,7 +51,7 @@ export class NavbarRepository {
     const newNavbarItem = await this.prismaService.navbar.create({
       data: {
         ...data,
-        image: data.image? '/images/' + data.image?.path : null,
+        image: data.image?.filename || null,
         type: navbarType,
       },
     });

@@ -1,9 +1,9 @@
 model Attribute {
-  id      String           @id @default(uuid())
-  title   String
-  values  AttributeValue[]
-	configuration StockConfiguration[]
-  // product Product[]        @relation("ProductAttribute")
+  id            String               @id @default(uuid())
+  title         String
+  values        AttributeValue[]
+  configuration StockConfiguration[]
+  product       Product[]            @relation("ProductAttribute")
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

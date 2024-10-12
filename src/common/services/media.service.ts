@@ -3,6 +3,7 @@ import * as fs from 'fs/promises'
 import { existsSync } from "fs";
 import { MediaRepository } from "src/repositories/media.repository";
 import { CreateMedia, IMedia } from "src/repositories/interfaces/media.interface";
+import * as path from "path";
 
 @Injectable()
 export class MediaService {
@@ -29,8 +30,10 @@ export class MediaService {
 	async removeMedia(id: string): Promise<void> {
 			const media = await this.mediaRepository.findById(id);
 	
-			if (existsSync(media.path)) {
-				await fs.unlink(media.path);
+			const mediaPath = path.join(process.cwd(), 'public', 'images', media.path);
+
+			if (existsSync(mediaPath)) {
+				await fs.unlink(mediaPath);
 			}
 	
 			await this.mediaRepository.delete(id);

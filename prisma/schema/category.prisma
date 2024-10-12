@@ -8,6 +8,7 @@ model Category {
   children    Category[] @relation("CategoryParent")
   products    Product[]  @relation("CategoryProduct")
   images      Media[]
+  is_featured Boolean    @default(false)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

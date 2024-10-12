@@ -11,7 +11,7 @@ class PromoProductDto {
   };
 }
 
-class PromoHomeDto<T> {
+export class PromoHomeDto<T> {
 	id: string;
 	title: string;
 	body: string;

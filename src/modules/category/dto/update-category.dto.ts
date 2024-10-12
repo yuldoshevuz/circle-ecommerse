@@ -1,27 +1,38 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString, IsUUID } from "class-validator";
-import { v4 } from "uuid";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { v4 } from 'uuid';
 
 export class UpdateCategoryDto {
-	@ApiProperty({ example: 'Computers and laptops', required: false })
-	@IsString()
-	@IsOptional()
-	title?: string;
+  @ApiPropertyOptional({ example: 'Computers and laptops' })
+  @IsString()
+  @IsOptional()
+  title?: string;
 
-	@ApiProperty({ example: 'The best computers and laptops', required: false })
-	@IsString()
-	@IsOptional()
-	description?: string;
+  @ApiPropertyOptional({ example: 'The best computers and laptops' })
+  @IsString()
+  @IsOptional()
+  description?: string;
 
-	@ApiProperty({ example: v4(), required: false })
-	@IsString()
-	@IsOptional()
-	parentId?: string;
+  @ApiPropertyOptional({ example: v4() })
+  @IsString()
+  @IsOptional()
+  parentId?: string;
 
-	@ApiProperty({
+  @ApiPropertyOptional({
     type: 'array',
     items: { type: 'file', format: 'binary' },
-    required: false,
   })
-	images?: Express.Multer.File[];
+  images?: Express.Multer.File[];
+
+  @ApiPropertyOptional({ example: true })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value === 'true' ? true : false;
+    }
+    return value;
+  })
+  @IsBoolean()
+  @IsOptional()
+  is_featured?: boolean;
 }
