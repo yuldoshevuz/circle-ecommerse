@@ -64,7 +64,7 @@ export class CategoryController {
 	@ApiBearerAuth('accessToken')
 	async delete(@Param('id') id: string) {
 		return this.categoryService.delete(id);
-	} 
+	}
 
 	@Delete('image/:id')
 	@AuthDecorator(RoleUser['ADMIN'])

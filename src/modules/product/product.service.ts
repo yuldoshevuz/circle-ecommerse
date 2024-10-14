@@ -46,7 +46,7 @@ export class ProductService {
       brand: {
         id: brand,
       },
-      favourite_users: favourite && { some: { id: userId } },
+      favourite_users: favourite && { some: { id: userId } } || {},
       price: {
         lte: price_to,
         gte: price_from,
