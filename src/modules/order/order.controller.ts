@@ -39,7 +39,7 @@ export class OrderController {
     return this.orderService.create(dto, request);
   }
 
-  @AuthDecorator(RoleUser['USER'])
+  @AuthDecorator(RoleUser['ADMIN'])
   @Put(':id')
   async updateStatus(
     @Param('id') id: string,

@@ -3,6 +3,7 @@ model Product {
   title           String
   slug            String      @unique
   description     String
+  price           String?
   promo           Promo?
   brand           Brand       @relation(fields: [brand_id], references: [id], onDelete: Cascade)
   brand_id        String

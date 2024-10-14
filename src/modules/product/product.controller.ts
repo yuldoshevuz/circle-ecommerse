@@ -27,7 +27,6 @@ import { NavbarModelType, RoleUser } from '@prisma/client';
 import { CheckExistsModel } from 'src/common/guards/check-exists-model.guard';
 import { AuthDecorator } from '../auth/decorators/auth.decorator';
 import { RequestWithUser } from 'src/common/interfaces/request-with-user.interface';
-import { Request } from 'express';
 import { ToggleProductFavouriteDto } from './dto/toggle-favourite.dto';
 
 @Controller('product')

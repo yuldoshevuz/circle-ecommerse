@@ -46,14 +46,10 @@ export class ProductService {
       brand: {
         id: brand,
       },
-      favourite_users: (favourite && { some: { id: userId } }) || {},
-      stocks: {
-        some: {
-          price: {
-            lte: price_to,
-            gte: price_from,
-          },
-        },
+      favourite_users: favourite && { some: { id: userId } },
+      price: {
+        lte: price_to,
+        gte: price_from,
       },
     };
 
@@ -125,7 +121,7 @@ export class ProductService {
       thumbnail: product.images?.length
         ? process.env.BASE_URL + '/images/' + product.images[0]?.path
         : null,
-      price: product.stocks[0].price,
+      price: product.price,
       brand: {
         id: product.brand.id,
         title: product.brand.title,
@@ -211,7 +207,7 @@ export class ProductService {
               path: process.env.BASE_URL + '/images/' + product.images[0].path,
             }
           : null,
-        price: product.stocks[0].price,
+        price: product.price,
         brand: {
           id: product.brand.id,
           title: product.brand.title,

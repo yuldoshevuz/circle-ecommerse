@@ -56,7 +56,7 @@ export class CategoryService {
       products: category.products.map(product => ({
 				id: product.id,
 				title: product.title,
-				price: product.stocks[0].price,
+				price: product.price,
 				brand: {
 					id: product.brand.id,
 					title: product.brand.title,

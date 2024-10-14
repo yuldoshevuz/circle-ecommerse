@@ -149,6 +149,7 @@ export class ProductRepository {
     const {
       title,
       description,
+			price,
       brand_id,
       attributes,
       parameters,
@@ -195,6 +196,7 @@ export class ProductRepository {
           title,
           description,
           slug: this.categoryRepository.slugger(title),
+					price,
           brand: { connect: { id: brand_id } },
           attributes: {
             connect: attributes.map((attrId) => ({ id: attrId })),
@@ -255,6 +257,7 @@ export class ProductRepository {
     const {
       title,
       description,
+			price,
       brand_id,
       attributes,
       categories,
@@ -316,6 +319,7 @@ export class ProductRepository {
           slug: title
             ? this.categoryRepository.slugger(title)
             : existingProduct.slug,
+					price,
           brand_id: brand_id && brand_id,
           attributes: attributes && {
             disconnect: existingProduct.attributes.map((attr) => ({

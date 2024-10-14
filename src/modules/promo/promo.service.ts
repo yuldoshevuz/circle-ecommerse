@@ -45,7 +45,7 @@ export class PromoService {
 					id: left.product.id,
 					title: left.product.title,
 					slug: left.product.slug,
-					price: left.product.stocks[0].price,
+					price: left.product.price,
 					brand: {
 						id: left.product.brand.id,
 						title: left.product.brand.title,
@@ -65,7 +65,7 @@ export class PromoService {
 					id: right.product.id,
 					title: right.product.title,
 					slug: right.product.slug,
-					price: right.product.stocks[0].price,
+					price: right.product.price,
 					brand: {
 						id: right.product.brand.id,
 						title: right.product.brand.title,

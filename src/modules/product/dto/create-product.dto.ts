@@ -60,6 +60,11 @@ export class CreateProductDto {
   @IsNotEmpty()
   description: string;
 
+	@ApiProperty({ example: '800' })
+	@IsNumberString() // Use IsString for price
+  @IsNotEmpty()
+	price: string;
+
   @ApiProperty({ example: v4() })
   @IsUUID('all', { each: true })
   @IsString()

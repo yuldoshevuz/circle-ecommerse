@@ -62,7 +62,7 @@ export class HomeService {
         products: category.products.map((product) => ({
           id: product.id,
           title: product.title,
-          price: product.stocks[0].price,
+          price: product.price,
           brand: {
             id: product.brand.id,
             title: product.brand.title,
@@ -99,7 +99,7 @@ export class HomeService {
             thumbnail: promo.product.images
               ? process.env.BASE_URL + '/images/' + promo.product.images[0].path
               : null,
-            price: promo.product.stocks[0].price,
+            price: promo.product.price,
           }) ||
           null,
       })),
@@ -111,7 +111,7 @@ export class HomeService {
         thumbnail: product.images?.length
           ? process.env.BASE_URL + '/images/' + product.images[0]?.path
           : null,
-        price: product.stocks[0].price,
+        price: product.price,
         brand: {
           id: product.brand.id,
           title: product.brand.title,

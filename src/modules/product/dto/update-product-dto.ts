@@ -1,6 +1,6 @@
 import { ApiPropertyOptional, PartialType } from "@nestjs/swagger";
 import { CreateParameterDto, CreateProductDto, CreateStockDto } from "./create-product.dto";
-import { ArrayMinSize, IsArray, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
+import { ArrayMinSize, IsArray, IsNumberString, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 import { v4 } from "uuid";
 
@@ -14,6 +14,11 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
   @IsString()
   @IsOptional()
   description?: string;
+
+	@ApiPropertyOptional({ example: '800' })
+	@IsNumberString() // Use IsString for price
+  @IsOptional()
+	price?: string;
 
   @ApiPropertyOptional({ example: v4() })
   @IsUUID('all', { each: true })
@@ -89,7 +94,6 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
   @IsOptional()
   stocks?: CreateStockDto[];
 
-	
 
   @ApiPropertyOptional({ example: [v4(), v4()] })
   @IsArray()
