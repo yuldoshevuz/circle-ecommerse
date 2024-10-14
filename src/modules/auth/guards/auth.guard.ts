@@ -28,7 +28,7 @@ export class JwtAuthGuard implements CanActivate {
 
 		try {
 			const decoded = <UserJwtPaylod>jwt.verify(accessToken, this.JWT_SECRET);
-			
+		
 			if (!decoded.user_id) throw new UnauthorizedException();
 
 			const existsUser = await this.userRepository.findById(decoded.user_id, 'User not found');

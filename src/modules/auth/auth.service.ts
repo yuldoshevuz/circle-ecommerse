@@ -34,7 +34,7 @@ export class AuthService {
   }
 
   private async generateToken(userId: string): Promise<string> {
-    return this.jwtService.signAsync({ sub: userId });
+    return this.jwtService.signAsync({ user_id: userId });
   }
 
   private formatResponse(user: IUser, accessToken: string): AuthResponseDto {

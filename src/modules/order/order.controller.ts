@@ -51,7 +51,6 @@ export class OrderController {
 	@AuthDecorator(RoleUser['ADMIN'])
   @Get(':id')
   async findById(@Param('id') id: string) {
-		console.log('Req');
     return this.orderService.findById(id);
   }
 }

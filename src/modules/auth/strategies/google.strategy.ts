@@ -14,8 +14,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       clientID: configService.get<string>('GOOGLE_CLIENT_ID'),
       clientSecret: configService.get<string>('GOOGLE_CLIENT_SECRET'),
       callbackURL: `${configService.get<string>('BASE_URL')}/api/auth/google/redirect`,
-      scope: ['email', 'profile'],
-			passReqToCallback: true,
+      scope: ['email', 'profile']
     });
   }
 
@@ -27,7 +26,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   ) {
     try {
       const validatedUser = await this.authService.validate({
-        google_id: profile.id,
+        google_id: profile?.id,
         full_name: profile.displayName,
         email: profile.emails[0].value,
       });

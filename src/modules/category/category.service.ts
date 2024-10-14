@@ -31,9 +31,6 @@ export class CategoryService {
     id: string,
     dto: UpdateCategoryDto,
   ): Promise<CategoryResponseDto> {
-		console.log(dto);
-		
-
     const updatedCategory = await this.categoryRepository.update(id, dto);
 		return this.formatResponse(updatedCategory);
   }

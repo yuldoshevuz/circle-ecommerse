@@ -224,19 +224,4 @@ export class CartRepository {
 			where: { cart_id: id },
 		});
 	}
-
-  private include(): Prisma.CartInclude {
-    return {
-      items: {
-        include: {
-          stock: {
-            include: {
-              configurations: true,
-              product: true,
-            },
-          },
-        },
-      },
-    };
-  }
 }

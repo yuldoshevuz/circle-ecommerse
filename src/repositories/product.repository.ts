@@ -390,45 +390,42 @@ export class ProductRepository {
   }
 
   async toggleFavourite(productId: string, userId: string): Promise<IProduct> {
-    await this.findById(productId);
-
-    const existsFavourite = await this.prismaService.product.findFirst({
-      where: {
-        favourite_users: {
-          some: { id: userId },
-        },
-      },
-    });
-
-    await this.prismaService.product.update({
-      where: { id: productId },
-      data: {
-        favourite_users: existsFavourite
-          ? { disconnect: { id: userId } }
-          : { connect: { id: userId } },
-      },
-    });
-
-    return await this.findById(productId);
-  }
+		await this.findById(productId);
+	
+		const existsFavourite = await this.prismaService.user.findFirst({
+			where: {
+				id: userId,
+				favourites: {
+					some: { id: productId },
+				},
+			},
+		});
+	
+		if (existsFavourite) {
+			await this.prismaService.user.update({
+				where: { id: userId },
+				data: {
+					favourites: {
+						disconnect: { id: productId },
+					},
+				},
+			});
+		} else {
+			await this.prismaService.user.update({
+				where: { id: userId },
+				data: {
+					favourites: {
+						connect: { id: productId },
+					},
+				},
+			});
+		}
+	
+		return await this.findById(productId);
+	}	
 
   async delete(id: string): Promise<void> {
     await this.findById(id);
     await this.prismaService.product.delete({ where: { id } });
-  }
-
-  private include(): Prisma.ProductInclude {
-    return {
-      images: true,
-      stocks: {
-        include: { configurations: true },
-      },
-      brand: true,
-      tags: true,
-      attributes: {
-        include: { values: true },
-      },
-      parameters: true,
-    };
   }
 }
