@@ -96,7 +96,7 @@ export class HomeService {
               title: promo.product.brand.title,
               slug: promo.product.brand.slug,
             },
-            thumbnail: promo.product.images
+            thumbnail: promo.product.images?.length
               ? process.env.BASE_URL + '/images/' + promo.product.images[0].path
               : null,
             price: promo.product.price,
