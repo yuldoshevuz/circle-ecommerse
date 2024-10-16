@@ -89,3 +89,8 @@ export class ProductOneResponseDto {
 		value: string;
 	}[];
 }
+
+export class ProductsSearchResponseDto {
+	products: ProductOneResponseDto[];
+	suggestions: string[];
+};

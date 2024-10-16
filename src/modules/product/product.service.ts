@@ -6,6 +6,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import {
   ProductManyResponseDto,
   ProductOneResponseDto,
+  ProductsSearchResponseDto,
 } from './dto/product-response.dto';
 import { NavbarModelType, Prisma } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
@@ -46,7 +47,7 @@ export class ProductService {
       brand: {
         id: brand,
       },
-      favourite_users: favourite && { some: { id: userId } } || {},
+      favourite_users: (favourite && { some: { id: userId } }) || {},
       price: {
         lte: price_to,
         gte: price_from,
@@ -73,9 +74,13 @@ export class ProductService {
     );
   }
 
-  async search(str: string): Promise<ProductOneResponseDto[]> {
+  async search(str: string): Promise<ProductsSearchResponseDto> {
     const products = await this.productRepository.search(str);
-    return products.map((product) => this.formatResponseOne(product));
+
+    return {
+      suggestions: products.map((product) => product.title),
+      products: products.map((product) => this.formatResponseOne(product)),
+    };
   }
 
   async findBySlug(slug: string): Promise<ProductOneResponseDto> {

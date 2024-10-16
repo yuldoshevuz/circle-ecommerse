@@ -1,11 +1,9 @@
-import { Body, Controller, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Req } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { RequestWithUser } from 'src/common/interfaces/request-with-user.interface';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/auth.guard';
-import { OnlyAdminGuard } from '../auth/guards/role-admin.guard';
 import { RoleUser } from '@prisma/client';
 import { AuthDecorator } from '../auth/decorators/auth.decorator';
 
